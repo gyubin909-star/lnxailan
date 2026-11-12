@@ -151,7 +151,8 @@ async function api(path,opt={}){
   if(!r.ok){
     let m=typeof j==="string"?j:(j.message||j.error?.message||JSON.stringify(j));
     const t=/<title>(.*?)<\/title>/i.exec(m); if(t) m=t[1];
-    throw new Error(`${opt.method||"GET"} ${path.split("?")[0]} -> HTTP ${r.status}: ${m.slice(0,300)}`);
+    const up=r.headers.get("x-upstream");
+    throw new Error(`${opt.method||"GET"} ${path.split("?")[0]} -> HTTP ${r.status}: ${m.slice(0,300)}${up?" [FLORA url: "+up+"]":""}`);
   }
   return j;
 }
@@ -167,10 +168,15 @@ async function resolveModel(kind){
 }
 async function resolveProject(){
   if(S.cfg.prj) return S.cfg.prj;
-  let d; try{ d=await api("/projects?workspace_id="+encodeURIComponent(S.cfg.ws)); }
-  catch(e){ throw new Error("Gagal mengambil daftar project. Isi 'prj' (Project ID, awalan prj_) di DEFAULTS pada file ini. Detail: "+e.message); }
-  const list=d.projects||d.data||d; const p=Array.isArray(list)&&list[0];
-  if(!p) throw new Error("Tidak ada project di workspace. Buat project di FLORA atau isi prj di DEFAULTS pada file ini.");
+  let p;
+  try{
+    const d=await api("/projects?workspace_id="+encodeURIComponent(S.cfg.ws));
+    const list=d.projects||d.data||d; p=Array.isArray(list)&&list[0];
+  }catch(e1){ var err1=e1; }
+  if(!p){
+    try{ p=await api("/projects",{method:"POST",body:JSON.stringify({workspace_id:S.cfg.ws,name:"LANEXA AI"})}); }
+    catch(e2){ throw new Error("Gagal mengambil/membuat project. Isi 'prj' (awalan prj_) di DEFAULTS pada file ini. Detail: "+(err1?err1.message:e2.message)); }
+  }
   return (S.cfg.prj=p.project_id||p.id);
 }
 // Kompres gambar referensi (maks 1280px, JPEG) agar request kecil (batas body Vercel 4,5 MB)

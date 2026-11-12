@@ -21,7 +21,9 @@ export default async function handler(req, res) {
     const hasBody = !["GET", "HEAD"].includes(req.method);
     const body = hasBody ? (typeof req.body === "string" ? req.body : JSON.stringify(req.body)) : undefined;
 
-    const r = await fetch(FLORA + "/" + parts.join("/") + search, { method: req.method, headers, body });
+    const target = FLORA + "/" + parts.join("/") + search;
+    const r = await fetch(target, { method: req.method, headers, body });
+    res.setHeader("X-Upstream", target);
     res.status(r.status).setHeader("Content-Type", r.headers.get("content-type") || "application/json");
     return res.send(Buffer.from(await r.arrayBuffer()));
   } catch (e) {
