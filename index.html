@@ -148,7 +148,11 @@ async function api(path,opt={}){
   const url = path.startsWith("http")?path:S.cfg.base+path;
   const r = await fetch(url,{...opt,headers:{...(S.cfg.key?{"Authorization":"Bearer "+S.cfg.key}:{}),"Content-Type":"application/json",...(opt.headers||{})}});
   const t = await r.text(); let j; try{j=JSON.parse(t)}catch(e){j=t}
-  if(!r.ok) throw new Error(`HTTP ${r.status}: ${typeof j==="string"?j:(j.message||j.error?.message||JSON.stringify(j))}`);
+  if(!r.ok){
+    let m=typeof j==="string"?j:(j.message||j.error?.message||JSON.stringify(j));
+    const t=/<title>(.*?)<\/title>/i.exec(m); if(t) m=t[1];
+    throw new Error(`${opt.method||"GET"} ${path.split("?")[0]} -> HTTP ${r.status}: ${m.slice(0,300)}`);
+  }
   return j;
 }
 async function resolveModel(kind){
@@ -163,8 +167,9 @@ async function resolveModel(kind){
 }
 async function resolveProject(){
   if(S.cfg.prj) return S.cfg.prj;
-  const d=await api("/projects?workspace_id="+encodeURIComponent(S.cfg.ws));
-  const list=d.projects||d.data||d; const p=list&&list[0];
+  let d; try{ d=await api("/projects?workspace_id="+encodeURIComponent(S.cfg.ws)); }
+  catch(e){ throw new Error("Gagal mengambil daftar project. Isi 'prj' (Project ID, awalan prj_) di DEFAULTS pada file ini. Detail: "+e.message); }
+  const list=d.projects||d.data||d; const p=Array.isArray(list)&&list[0];
   if(!p) throw new Error("Tidak ada project di workspace. Buat project di FLORA atau isi prj di DEFAULTS pada file ini.");
   return (S.cfg.prj=p.project_id||p.id);
 }
@@ -191,13 +196,15 @@ $("#gen").onclick=async()=>{
     const run=await api("/generate",{method:"POST",headers:{"Idempotency-Key":crypto.randomUUID()},
       body:JSON.stringify({type:"image",prompt,workspace_id:S.cfg.ws,project_id:project,model,params})});
     const eta=run.estimated_seconds?` (perkiraan ${run.estimated_seconds} dtk)`:"";
+    const rid=run.run_id||run.runId;
+    const pollPath=/\/api\/v1(\/.+)$/.exec(run.poll_url||"")?.[1]||("/runs/"+rid);
     show("load","Sedang membuat gambar"+eta+"...");
     let res;
     for(let i=0;i<120;i++){
       await sleep(3000);
-      res=await api("/runs/"+run.run_id);
+      res=await api(pollPath);
       if(res.status==="completed")break;
-      if(res.status==="failed")throw new Error(res.error?.message||res.error||"Generasi gagal.");
+      if(res.status==="failed")throw new Error(res.error_message||res.error?.message||res.error_code||"Generasi gagal.");
     }
     if(!res||res.status!=="completed")throw new Error("Waktu tunggu habis.");
     const urls=[...new Set(collectUrls(res.outputs||res.output||res.result||res))].filter(u=>!u.includes("/api/v1/"));
