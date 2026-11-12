@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LANEXA AI</title>
+<style>
+:root{--bg:#0a0803;--txt:#f3f6ff;--mut:#b9a978;--glass:#1d1910;--bd:rgba(255,205,80,.24);--acc:#ffc83d;--acc2:#e08a00;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);overflow-x:hidden}
+.glass{background:#14110a;border:1px solid var(--bd);border-radius:14px}
+header{position:sticky;top:0;z-index:5;margin:12px auto;max-width:1200px;width:calc(100% - 24px);display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-radius:10px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.14em}
+.logo b{color:#1a1200;width:30px;height:30px;border-radius:10px;background:var(--acc);display:grid;place-items:center;font-size:16px;letter-spacing:0}
+.logo span{color:var(--txt)}
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{cursor:pointer;border:1px solid var(--bd);background:var(--glass);padding:10px 16px;border-radius:10px;transition:.2s}
+.btn:hover{background:#2a2412;transform:none}
+.btn.pri{background:var(--acc);border:0;font-weight:700;color:#1a1200;box-shadow:none}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+main{max-width:1200px;margin:0 auto;padding:12px;display:grid;grid-template-columns:420px 1fr;gap:16px;align-items:start}
+.panel{padding:18px;display:flex;flex-direction:column;gap:14px}
+h1{font-size:clamp(1.3rem,3vw,1.7rem)}
+p.sub{color:var(--mut);font-size:.9rem;margin-top:4px}
+label{font-size:.78rem;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px}
+textarea,select,input[type=text],input[type=password]{width:100%;background:#0e0c07;border:1px solid var(--bd);border-radius:10px;padding:12px 14px;outline:0}
+textarea{min-height:120px;resize:vertical}
+textarea:focus,select:focus,input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(255,200,60,.28)}
+select option{background:#1c1608}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:64px;cursor:pointer;padding:10px 8px;border-radius:14px;border:1px solid var(--bd);background:#0e0c07;font-size:.85rem}
+.seg button.on{background:var(--acc);color:#1a1200;border-color:var(--acc);font-weight:600}
+.ars{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.ars button{cursor:pointer;padding:8px 2px;border-radius:12px;border:1px solid var(--bd);background:#0e0c07;font-size:.78rem}
+.ars button.on{background:var(--acc);color:#1a1200;border-color:var(--acc)}
+.drop{border:1.5px dashed var(--bd);border-radius:18px;padding:12px;text-align:center;color:var(--mut);cursor:pointer;font-size:.9rem}
+.drop.over{border-color:var(--acc);background:rgba(255,200,60,.1)}
+.refs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.refs div{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--bd)}
+.refs img{width:100%;height:100%;object-fit:cover}
+.refs button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;cursor:pointer;line-height:1}
+.out{padding:18px;min-height:360px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.card{border-radius:20px;overflow:hidden;border:1px solid var(--bd);background:#0e0c07}
+.card img{width:100%;display:block;cursor:zoom-in}
+.lb{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.92);display:none;overflow:auto;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+.lb.on{display:block}
+.lb img{display:block;margin:auto;max-width:100%;max-height:calc(100vh - 32px);object-fit:contain;cursor:zoom-in;border-radius:8px}
+.lb.z img{max-width:none;max-height:none;width:200%;cursor:zoom-out}
+.lb .x{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;width:40px;height:40px;border-radius:10px;border:1px solid var(--bd);background:#14110a;color:var(--txt);font-size:22px;cursor:pointer;z-index:21}
+.card .bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;font-size:.8rem;color:var(--mut)}
+.empty{display:grid;place-items:center;min-height:300px;color:var(--mut);text-align:center;padding:20px}
+.spin{width:44px;height:44px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:var(--acc);animation:r 1s linear infinite;margin:0 auto 14px}
+@keyframes r{to{transform:rotate(360deg)}}
+.err{background:rgba(255,80,100,.15);border:1px solid rgba(255,120,130,.5);padding:12px 14px;border-radius:16px;font-size:.88rem;margin-top:12px;word-break:break-word}
+.row{display:flex;gap:8px;justify-content:flex-end}
+small{color:var(--mut);font-size:.78rem;line-height:1.4}
+@media(max-width:900px){main{grid-template-columns:1fr}.refs{grid-template-columns:repeat(4,1fr)}.ars{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){.grid{gap:8px}.card .bar{flex-direction:column;align-items:stretch;text-align:center}}
+</style>
+</head>
+<body>
+
+<header class="glass">
+  <div class="logo"><b>L</b><span>LANEXA AI</span></div>
+</header>
+
+<main>
+  <section class="glass panel">
+    <div><h1>Buat gambar dengan AI</h1><p class="sub">Tulis prompt, pilih model, lalu generate.</p></div>
+
+    <div><label for="prompt">Prompt</label>
+      <textarea id="prompt" placeholder="Deskripsikan gambar yang ingin kamu buat..."></textarea></div>
+
+    <div><label for="model">Model AI</label>
+      <select id="model">
+        <option value="nano">Nano Banana 2.1</option>
+        <option value="gpt">GPT Image 2</option>
+      </select></div>
+
+    <div><label>Aspect ratio</label><div class="ars" id="ars"></div></div>
+
+    <div><label>Kualitas</label>
+      <div class="seg" id="quality">
+        <button data-v="standard">Standard</button>
+        <button data-v="high" class="on">High</button>
+        <button data-v="ultra">Ultra</button>
+      </div></div>
+
+    <div><label>Gambar referensi (<span id="rc">0</span>/8)</label>
+      <div class="drop" id="drop">Tap atau seret gambar ke sini</div>
+      <input type="file" id="file" accept="image/*" multiple hidden>
+      <div class="refs" id="refs"></div></div>
+
+    <button class="btn pri" id="gen">✨ Generate</button>
+  </section>
+
+  <section class="glass out">
+    <div id="status" class="empty">Hasil gambar akan tampil di sini.</div>
+    <div class="grid" id="results"></div>
+  </section>
+</main>
+
+<div class="lb" id="lb"><button class="x" id="lbx" aria-label="Tutup">×</button><img id="lbi" alt=""></div>
+
+<script>
+/* ===== KONFIGURASI =====
+   Jalankan lewat server.js agar tidak terkena CORS dan API key tetap aman di server. */
+const DEFAULTS = {
+  base: "/api",   // lewat server.js (proxy), key disimpan di server
+  key: "",
+  ws: "ws_qd7cek53zzryghhgyw49xnxn358hxfkv",
+  prj: "", m1: "", m2: ""
+};
+// Nama field parameter model. Sesuaikan jika dokumentasi model berbeda.
+const PARAM = { aspect: "aspect_ratio", quality: "quality", refs: "image_urls" };
+const MATCH = { nano: /nano.?banana/i, gpt: /gpt.?image/i };
+const ARS = ["1:1","4:5","3:4","2:3","9:16","16:9","4:3","3:2","21:9","5:4"];
+
+const $ = s => document.querySelector(s);
+const S = { cfg: {...DEFAULTS}, ar: "1:1", q: "high", refs: [], models: null };
+
+/* UI: aspect ratio */
+$("#ars").innerHTML = ARS.map(a => `<button data-v="${a}" class="${a===S.ar?"on":""}">${a}</button>`).join("");
+$("#ars").onclick = e => { const b=e.target.closest("button"); if(!b)return; S.ar=b.dataset.v; [...$("#ars").children].forEach(x=>x.classList.toggle("on",x===b)); };
+$("#quality").onclick = e => { const b=e.target.closest("button"); if(!b)return; S.q=b.dataset.v; [...$("#quality").children].forEach(x=>x.classList.toggle("on",x===b)); };
+
+/* UI: referensi */
+const drop=$("#drop"), file=$("#file");
+drop.onclick=()=>file.click();
+file.onchange=()=>{addRefs(file.files);file.value=""};
+["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>addRefs(e.dataTransfer.files));
+function addRefs(list){
+  for(const f of list){ if(S.refs.length>=8)break; if(!f.type.startsWith("image/"))continue; S.refs.push({f,url:URL.createObjectURL(f)}); }
+  renderRefs();
+}
+function renderRefs(){
+  $("#rc").textContent=S.refs.length;
+  $("#refs").innerHTML=S.refs.map((r,i)=>`<div><img src="${r.url}" alt=""><button data-i="${i}" aria-label="Hapus">×</button></div>`).join("");
+}
+$("#refs").onclick=e=>{const b=e.target.closest("button");if(!b)return;URL.revokeObjectURL(S.refs[b.dataset.i].url);S.refs.splice(b.dataset.i,1);renderRefs()};
+
+/* API */
+async function api(path,opt={}){
+  const url = path.startsWith("http")?path:S.cfg.base+path;
+  const r = await fetch(url,{...opt,headers:{...(S.cfg.key?{"Authorization":"Bearer "+S.cfg.key}:{}),"Content-Type":"application/json",...(opt.headers||{})}});
+  const t = await r.text(); let j; try{j=JSON.parse(t)}catch(e){j=t}
+  if(!r.ok) throw new Error(`HTTP ${r.status}: ${typeof j==="string"?j:(j.message||j.error?.message||JSON.stringify(j))}`);
+  return j;
+}
+async function resolveModel(kind){
+  const manual = kind==="nano"?S.cfg.m1:S.cfg.m2;
+  if(manual) return manual;
+  if(!S.models){ const d=await api("/models?type=image"); S.models=d.models||d.data||d; }
+  const hit = S.models.filter(m=>MATCH[kind].test(m.name||m.model_id||""));
+  const want = kind==="nano"?/2\.?1/:/2/;
+  const m = hit.find(x=>want.test(x.name||""))||hit[0];
+  if(!m) throw new Error("Model tidak ditemukan di daftar FLORA. Isi m1/m2 (Model ID) di DEFAULTS pada file ini.");
+  return m.model_id||m.id;
+}
+async function resolveProject(){
+  if(S.cfg.prj) return S.cfg.prj;
+  const d=await api("/projects?workspace_id="+encodeURIComponent(S.cfg.ws));
+  const list=d.projects||d.data||d; const p=list&&list[0];
+  if(!p) throw new Error("Tidak ada project di workspace. Buat project di FLORA atau isi prj di DEFAULTS pada file ini.");
+  return (S.cfg.prj=p.project_id||p.id);
+}
+// Kompres gambar referensi (maks 1280px, JPEG) agar request kecil (batas body Vercel 4,5 MB)
+const toDataUrl=f=>new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(f);img.onload=()=>{const k=Math.min(1,1280/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",.85))};img.onerror=rej;img.src=u});
+function collectUrls(o,acc=[]){
+  if(typeof o==="string"){ if(/^https?:\/\//.test(o)) acc.push(o); }
+  else if(Array.isArray(o)) o.forEach(x=>collectUrls(x,acc));
+  else if(o&&typeof o==="object") Object.values(o).forEach(x=>collectUrls(x,acc));
+  return acc;
+}
+
+/* Generate */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+$("#gen").onclick=async()=>{
+  const prompt=$("#prompt").value.trim();
+  if(!prompt){return show("err","Prompt tidak boleh kosong.")}
+  const btn=$("#gen"); btn.disabled=true; btn.textContent="Memproses...";
+  show("load","Menyiapkan generasi...");
+  try{
+    const [model,project]=await Promise.all([resolveModel($("#model").value),resolveProject()]);
+    const params={[PARAM.aspect]:S.ar,[PARAM.quality]:S.q};
+    if(S.refs.length) params[PARAM.refs]=await Promise.all(S.refs.map(r=>toDataUrl(r.f)));
+    const run=await api("/generate",{method:"POST",headers:{"Idempotency-Key":crypto.randomUUID()},
+      body:JSON.stringify({type:"image",prompt,workspace_id:S.cfg.ws,project_id:project,model,params})});
+    const eta=run.estimated_seconds?` (perkiraan ${run.estimated_seconds} dtk)`:"";
+    show("load","Sedang membuat gambar"+eta+"...");
+    let res;
+    for(let i=0;i<120;i++){
+      await sleep(3000);
+      res=await api("/runs/"+run.run_id);
+      if(res.status==="completed")break;
+      if(res.status==="failed")throw new Error(res.error?.message||res.error||"Generasi gagal.");
+    }
+    if(!res||res.status!=="completed")throw new Error("Waktu tunggu habis.");
+    const urls=[...new Set(collectUrls(res.outputs||res.output||res.result||res))].filter(u=>!u.includes("/api/v1/"));
+    if(!urls.length)throw new Error("Tidak ada gambar pada respons.");
+    $("#status").style.display="none";
+    $("#results").insertAdjacentHTML("afterbegin",urls.map(u=>card(u,prompt)).join(""));
+  }catch(e){
+    const hint=/Failed to fetch|NetworkError|Load failed/i.test(e.message)?" — Kemungkinan diblokir CORS. Jalankan lewat server/proxy sendiri dan ubah base di DEFAULTS pada file ini.":"";
+    show("err",e.message+hint);
+  }finally{btn.disabled=false;btn.textContent="✨ Generate"}
+};
+function show(type,msg){
+  const s=$("#status"); s.style.display="";
+  if(type==="load"){s.className="empty";s.innerHTML=`<div><div class="spin"></div>${esc(msg)}</div>`}
+  else{s.className="err";s.textContent=msg}
+}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function card(u,p){
+  return `<div class="card"><img src="${esc(u)}" alt="${esc(p)}" loading="lazy"><div class="bar"><span>${S.ar} · ${S.q}</span><button class="btn" data-dl="${esc(u)}">⬇ Unduh</button></div></div>`;
+}
+
+/* Unduh */
+$("#results").onclick=async e=>{
+  const im=e.target.closest(".card img");
+  if(im){$("#lbi").src=im.src;$("#lb").classList.remove("z");$("#lb").classList.add("on");$("#lb").scrollTo(0,0);return}
+  const b=e.target.closest("[data-dl]"); if(!b)return;
+  const u=b.dataset.dl;
+  try{
+    const blob=await (await fetch(S.cfg.base.startsWith("/")?"/api/dl?u="+encodeURIComponent(u):u)).blob();
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download="lanexa-ai-"+Date.now()+"."+((blob.type.split("/")[1]||"png").replace("jpeg","jpg"));
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  }catch(err){ window.open(u,"_blank","noopener"); }
+};
+/* Zoom */
+const lb=$("#lb"),closeLb=()=>{lb.classList.remove("on","z")};
+$("#lbi").onclick=e=>{e.stopPropagation();lb.classList.toggle("z")};
+lb.onclick=e=>{if(e.target!==$("#lbi"))closeLb()};
+$("#lbx").onclick=closeLb;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeLb()});
+</script>
+</body>
+</html>
